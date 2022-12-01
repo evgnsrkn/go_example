@@ -7,27 +7,21 @@ import (
 	"gorm.io/gorm"
 )
 
-var DB *gorm.DB
+var (
+	db  *gorm.DB
+	err error
+)
 
-func ConnectDatabase() {
+func Init() {
 
-	dsn := "host=localhost " +
-		"user=srkn " +
-		"dbname=go_example " +
-		"port=5432 " +
-		"password=1234 " +
-		"sslmode=disable " +
-		"TimeZone=Europe/Moscow"
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-
+	dsn := "host=localhost user=srkn password=1234 dbname=go_example port=5432 sslmode=disable TimeZone=Europe/Moscow"
+	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		panic("Database connection error: " + err.Error())
+		panic("Failed database connection")
 	}
+	db.AutoMigrate(&model.User{})
+}
 
-	err = db.AutoMigrate(&model.User{})
-	if err != nil {
-		return
-	}
-
-	DB = db
+func DbManager() *gorm.DB {
+	return db
 }
